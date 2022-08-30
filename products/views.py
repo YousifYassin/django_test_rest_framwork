@@ -14,6 +14,7 @@ class ProductCreateAPIView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     # We can use perform insted of put()
+    # we can use it in mixen it allowed
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None
@@ -65,6 +66,8 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
         return super().perform_destroy(instance)
 
 # Here using mixin with class baseviews
+
+
 class ProductMixinView(
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
