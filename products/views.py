@@ -11,7 +11,9 @@ class ProductCreateAPIView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authenticatio_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.DjangoModelPermissions]
+
 
     # We can use perform insted of put()
     # we can use it in mixen it allowed
@@ -34,6 +36,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     # def get(request, *args, **kwargs):
