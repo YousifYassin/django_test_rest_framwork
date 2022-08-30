@@ -64,7 +64,7 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
 
-
+# Here using mixin with class baseviews
 class ProductMixinView(
         mixins.CreateModelMixin,
         mixins.ListModelMixin,
