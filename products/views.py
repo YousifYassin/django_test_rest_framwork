@@ -13,6 +13,7 @@ class ProductCreateAPIView(generics.CreateAPIView):
     authenticatio_classes = [authentication.SessionAuthentication]
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    # We can use perform insted of put()
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None
