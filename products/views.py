@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 # from django.http import http404
 from django.shortcuts import get_object_or_404
+from .permissions import IsStaffEditorPermission
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
@@ -12,11 +13,12 @@ class ProductCreateAPIView(generics.CreateAPIView):
     serializer_class = ProductSerializer
     authenticatio_classes = [authentication.SessionAuthentication]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    permission_classes = [permissions.DjangoModelPermissions]
-
+    # permission_classes = [permissions.DjangoModelPermissions]
+    permission_classes = [IsStaffEditorPermission]
 
     # We can use perform insted of put()
     # we can use it in mixen it allowed
+
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None
@@ -37,7 +39,8 @@ class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsStaffEditorPermission]
 
     # def get(request, *args, **kwargs):
     #     queryset = Product.objects.all().last()
