@@ -9,7 +9,7 @@ class IsStaffEditorPermission(permissions.DjangoModelPermissions):
         if user.is_staff:
             # products is the name of the app
             # product is the name of the models in lowercase
-            if user.has_perm("products.add_product"): #app_name.action_model_name
+            if user.has_perm("products.add_product"):  # app_name.action_model_name
                 return True
             if user.has_perm("products.delete_product"):
                 return True
