@@ -14,7 +14,7 @@ class ProductCreateAPIView(generics.CreateAPIView):
     authenticatio_classes = [authentication.SessionAuthentication]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # permission_classes = [permissions.DjangoModelPermissions]
-    permission_classes = [IsStaffEditorPermission]
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     # We can use perform insted of put()
     # we can use it in mixen it allowed
