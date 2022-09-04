@@ -11,10 +11,17 @@ from .permissions import IsStaffEditorPermission
 class ProductCreateAPIView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authenticatio_classes = [authentication.SessionAuthentication]
+    # This code below config be default in the setting
+    # authenticatio_classes = [
+    #     authentication.SessionAuthentication,
+    #     authentication.TokenAuthentication,
+    # ]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # permission_classes = [permissions.DjangoModelPermissions]
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    permission_classes = [
+        permissions.IsAdminUser,
+        IsStaffEditorPermission
+    ]
 
     # We can use perform insted of put()
     # we can use it in mixen it allowed
@@ -38,7 +45,10 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        authentication.TokenAuthentication
+    ]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     permission_classes = [IsStaffEditorPermission]
 
