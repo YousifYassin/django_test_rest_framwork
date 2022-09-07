@@ -3,6 +3,7 @@ from .models import Product
 from .serializers import ProductSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
 # from django.http import http404
 from django.shortcuts import get_object_or_404
 from .permissions import IsStaffEditorPermission
@@ -18,17 +19,14 @@ class ProductCreateAPIView(generics.CreateAPIView):
     # ]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # permission_classes = [permissions.DjangoModelPermissions]
-    permission_classes = [
-        permissions.IsAdminUser,
-        IsStaffEditorPermission
-    ]
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     # We can use perform insted of put()
     # we can use it in mixen it allowed
 
     def perform_create(self, serializer):
-        title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content") or None
         if content is None:
             content = title
             print(content)
@@ -39,17 +37,19 @@ class ProductCreateAPIView(generics.CreateAPIView):
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
     # lookup_field = pk
 
 
 class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [
-        authentication.SessionAuthentication,
-        authentication.TokenAuthentication
-    ]
+    # authentication_classes = [
+    #     authentication.SessionAuthentication,
+    #     authentication.TokenAuthentication
+    # ]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
     permission_classes = [IsStaffEditorPermission]
 
     # def get(request, *args, **kwargs):
@@ -64,9 +64,11 @@ class ProductListAPIView(generics.ListAPIView):
 class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'
+    lookup_field = "pk"
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_update(self, serializer):
+        # insert = serialized.save(user=self.request.user)
         instance = serializer.save()
         if not instance.content:
             instance.content = instance.title
@@ -76,38 +78,42 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
 class ProductDestroyAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'
+    lookup_field = "pk"
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
+
 
 # Here using mixin with class baseviews
 
 
 class ProductMixinView(
-        mixins.CreateModelMixin,
-        mixins.ListModelMixin,
-        mixins.RetrieveModelMixin,
-        mixins.UpdateModelMixin,
-        generics.GenericAPIView):
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    generics.GenericAPIView,
+):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'
+    lookup_field = "pk"
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
     def perform_update(self, serializer):
         # return super().perform_update(serializer)
-        title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
-        if not content is None:
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content") or None
+        if content is not None:
             content = title
         serializer.save(content=content)
 
     def get(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        if not pk is None:
+        pk = kwargs.get("pk")
+        if pk is not None:
             # Retrieve same as detail we use mixen with list
             return self.retrieve(request, *args, **kwargs)
         return self.list(request, *args, **kwargs)
@@ -124,7 +130,7 @@ class ProductMixinView(
     #     return Response({'status': 'bad data'})
 
 
-@api_view(['GET', 'POST'])
+@api_view(["GET", "POST"])
 def product_alt_view(request, pk=None, *args, **kwargs):
     method = request.method
     if method == "GET":
@@ -147,4 +153,4 @@ def product_alt_view(request, pk=None, *args, **kwargs):
                 content = title
                 serializer.save(content=content)
             return Response(serializer.data)
-        return Response({'invalid': 'Not good data'}, status=400)
+        return Response({"invalid": "Not good data"}, status=400)
