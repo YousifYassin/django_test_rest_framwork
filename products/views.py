@@ -1,12 +1,14 @@
-from rest_framework import generics, mixins, permissions, authentication
-from .models import Product
-from .serializers import ProductSerializer
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-
 # from django.http import http404
 from django.shortcuts import get_object_or_404
-from .permissions import IsStaffEditorPermission
+from rest_framework import authentication, generics, mixins, permissions
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from api import mixins as mixins_api
+from api.permissions import IsStaffEditorPermission
+
+from .models import Product
+from .serializers import ProductSerializer
 
 
 class ProductCreateAPIView(generics.CreateAPIView):
@@ -19,7 +21,7 @@ class ProductCreateAPIView(generics.CreateAPIView):
     # ]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     # permission_classes = [permissions.DjangoModelPermissions]
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    permission_classes = [mixins_api.StaffEditorPermissionMixin]
 
     # We can use perform insted of put()
     # we can use it in mixen it allowed
@@ -37,7 +39,7 @@ class ProductCreateAPIView(generics.CreateAPIView):
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    permission_classes = [mixins_api.StaffEditorPermissionMixin]
     # lookup_field = pk
 
 
@@ -49,8 +51,7 @@ class ProductListAPIView(generics.ListAPIView):
     #     authentication.TokenAuthentication
     # ]
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
-    permission_classes = [IsStaffEditorPermission]
+    permission_classes = [mixins_api.StaffEditorPermissionMixin]
 
     # def get(request, *args, **kwargs):
     #     queryset = Product.objects.all().last()
@@ -65,7 +66,7 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    permission_classes = [mixins_api.StaffEditorPermissionMixin]
 
     def perform_update(self, serializer):
         # insert = serialized.save(user=self.request.user)
@@ -79,7 +80,7 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    permission_classes = [mixins_api.StaffEditorPermissionMixin]
 
     def perform_destroy(self, instance):
         return super().perform_destroy(instance)
@@ -98,7 +99,7 @@ class ProductMixinView(
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"
-    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
+    permission_classes = [mixins_api.StaffEditorPermissionMixin]
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
